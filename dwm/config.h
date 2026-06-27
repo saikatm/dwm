@@ -22,7 +22,7 @@ static const unsigned int snap           = 32;  /* snap pixel */
 static const int swallowfloating         = 0;   /* 1 means swallow floating windows by default */
 #endif // SWALLOW_PATCH
 #if BAR_TAGPREVIEW_PATCH
-static const int scalepreview            = 4;        /* Tag preview scaling */
+static condst int scalepreview            = 4;        /* Tag preview scaling */
 #endif // BAR_TAGPREVIEW_PATCH
 #if NO_MOD_BUTTONS_PATCH
 static int nomodbuttons                  = 1;   /* allow client mouse button bindings that have no modifier */
@@ -170,7 +170,7 @@ static void (*bartabmonfns[])(Monitor *) = { NULL /* , customlayoutfn */ };
 #if BAR_PANGO_PATCH
 static const char font[]                 = "monospace 10";
 #else
-static const char *fonts[]               = { "JetBrainsMono Nerd Font:size=13", "monospace:size=13" };
+static const char *fonts[] 				 = { "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=false:weight=bold", "monospace:size=13"};
 #endif // BAR_PANGO_PATCH
 static const char dmenufont[]            = "monospace:size=10";
 
@@ -669,7 +669,7 @@ static const BarRule barrules[] = {
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
-static const int nmaster     = 4;    /* number of clients in master area */
+static const int nmaster     = 1;    /* number of clients in master area */
 #if FLEXTILE_DELUXE_LAYOUT
 static const int nstack      = 0;    /* number of clients in primary stack area */
 #endif // FLEXTILE_DELUXE_LAYOUT
