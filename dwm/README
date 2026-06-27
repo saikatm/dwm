@@ -1,0 +1,220 @@
+dwm - dynamic window manager (flexipatch build)
+================================================
+This is a custom dwm build based on bakkeby/dwm-flexipatch 6.8,
+configured for daily use on Xubuntu with the following patches enabled:
+
+  vanitygaps, cfacts, focusstack (stacker), bottomstack, movestack,
+  systray, alwayscenter, shiftview, autostart, seamless restart
+  (preserveonrestart), restartsig, selfrestart, dragmfact
+
+
+Requirements
+------------
+In order to build dwm you need the Xlib header files and the following
+build dependencies:
+
+    sudo apt install -y \
+        build-essential \
+        libx11-dev \
+        libxft-dev \
+        libxinerama-dev \
+        libxext-dev \
+        git \
+        xterm
+
+
+Runtime Dependencies
+--------------------
+These packages are required for the full setup to work correctly.
+Install them all at once with:
+
+    sudo apt install -y \
+        fonts-jetbrains-mono \
+        lxappearance \
+        parcellite \
+        dunst \
+        preload \
+        picom \
+        feh \
+        rofi \
+        flameshot \
+        xfce4-power-manager \
+        nm-applet \
+        gnome-themes-extra \
+        policykit-1-gnome
+
+What each package does:
+
+  fonts-jetbrains-mono  — primary bar and terminal font
+  lxappearance          — GTK theme switcher (run once to set dark theme)
+  parcellite            — clipboard manager (X11 clipboard fix)
+  dunst                 — notification daemon
+  preload               — adaptive readahead daemon, speeds up app launches
+  picom                 — compositor (transparency, shadows, no tearing)
+  feh                   — wallpaper setter
+  rofi                  — app launcher (bound to Super+Space)
+  flameshot             — screenshot tool (bound to Print key)
+  xfce4-power-manager   — lid close suspend, screen blank, battery tray icon
+  nm-applet             — network manager systray icon
+  gnome-themes-extra    — provides Adwaita/dark GTK themes for lxappearance
+  policykit-1-gnome     — polkit agent (GUI password prompts)
+
+
+Additional Builds (from source)
+--------------------------------
+The following suckless tools must be built and installed manually
+before launching dwm:
+
+  st (terminal):
+    git clone https://git.suckless.org/st
+    cd st && make && sudo make clean install
+
+  dmenu (app launcher):
+    git clone https://git.suckless.org/dmenu
+    cd dmenu && make && sudo make clean install
+
+  MegaSync (cloud storage, not in default Ubuntu repos):
+    https://mega.io/desktop
+
+
+Installation
+------------
+Clone the repository and build:
+
+    git clone https://github.com/bakkeby/dwm-flexipatch.git dwm
+    cd dwm
+    make clean install
+
+Patches are toggled in patches.def.h. After editing patches.def.h
+or config.h, rebuild with:
+
+    make clean && make && sudo make clean install
+
+
+Running dwm
+-----------
+A LightDM session file is provided. Copy it to make dwm appear
+as a session option on the login screen:
+
+    sudo cp dwm.desktop /usr/share/xsessions/dwm.desktop
+
+Then log out and select "dwm" from the session menu in LightDM.
+
+To start dwm via startx instead, add to your ~/.xinitrc:
+
+    exec dwm
+
+To connect dwm to a specific display:
+
+    DISPLAY=foo.bar:1 exec dwm
+
+
+Autostart
+---------
+dwm will run ~/.dwm/autostart.sh on startup (via AUTOSTART_PATCH).
+Create it if it does not exist:
+
+    mkdir -p ~/.dwm
+    touch ~/.dwm/autostart.sh
+    chmod +x ~/.dwm/autostart.sh
+
+paste this in the file 
+
+    ``
+
+    
+
+A working example autostart.sh for this setup:
+
+    #!/bin/sh
+    /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
+    nm-applet &
+    megasync &
+    flameshot &
+    parcellite &
+    dunst &
+
+    while true; do
+        xsetroot -name "$(date '+%I:%M%p %A %d %B %Y')"
+        sleep 1
+    done &
+
+
+Key Bindings (custom)
+---------------------
+MODKEY is set to Super (Mod4Mask).
+
+  Super+Shift+Return        open terminal (st)
+  Super+Space               rofi launcher
+  Super+p                   dmenu launcher
+  Print                     flameshot screenshot GUI
+  Super+Shift+r             restart dwm (selfrestart)
+  Super+Ctrl+Shift+q        restart dwm (restartsig)
+  Super+Shift+q             quit dwm
+  Super+Shift+c             close focused window
+
+  Super+j / Super+k         focus next/prev window
+  Super+Shift+j / k         move window in stack (movestack)
+  Super+h / Super+l         resize master area
+  Super+Shift+h / l         resize client cfact
+  Super+Return              zoom window to master
+  Super+Shift+Space         toggle floating
+  Super+f                   floating layout
+  Super+t                   tile layout
+  Super+m                   monocle layout
+
+  Super+1..9                view tag
+  Super+Shift+1..9          move window to tag
+  Super+Tab                 previous tag
+  Super+Shift+Tab           shiftview left
+
+  App launchers (Super+Ctrl+...):
+    f = Firefox
+    w = Chrome
+    y = htop in kitty
+    e = Nautilus
+    c = Calculator
+    o = Clocks
+    n = Notion
+    a = ChatGPT
+    g = Grok
+    Shift+t = Todoist
+    Shift+m = Monkeytype
+    Shift+s = Google Sheets
+    Shift+n = Google Keep
+
+  Gaps (Super+Ctrl+...):
+    Super+Mod4+0             toggle gaps
+    Super+Mod4+Shift+0       reset gaps
+    Super+Mod4+u/i/o         increase all/inner/outer gaps
+    Super+Mod4+Shift+u/i/o  decrease all/inner/outer gaps
+
+
+Configuration
+-------------
+All configuration is done in config.h (auto-generated from config.def.h
+on first build). Edit config.h directly for keybindings, colors, fonts,
+rules, and gap sizes. Patch selection is done in patches.def.h.
+
+After any change, rebuild:
+
+    make clean && make && sudo make clean install
+
+Then restart dwm with Super+Shift+r or Super+Ctrl+Shift+q.
+
+
+Color Scheme
+------------
+Catppuccin Mocha. Key colors:
+
+  Base background   #1e1e2e
+  Mantle (bar bg)   #181825
+  Surface           #313244
+  Text              #cdd6f4
+  Subtext           #6c7086
+  Selected border   #cba6f7  (mauve)
+  Normal border     #45475a
+  Float border      #94e2d5  (teal)
+  Urgent            #f38ba8  (red)
+  Status text       #a6e3a1  (green)
+        build-essential \
